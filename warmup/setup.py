@@ -21,8 +21,9 @@ setup(
     entry_points={        
         'console_scripts': [
             'test_viz = warmup.test_viz:main',
+            'teleop = warmup.teleop:main',
             'wall_follower = warmup.wall_follower:main',
-            'teleop = warmup.teleop:main'
+            'drive_square = warmup.drive_square:main'
         ],
     },
 )

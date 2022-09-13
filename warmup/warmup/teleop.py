@@ -51,6 +51,7 @@ def main(args=None):
     rclpy.init(args=args)         # Initialize communication with ROS
     node = TeleopNode()           # Create our Node
     rclpy.spin(node)              # Run the Node until ready to shutdown
+    node.destroy_node()
     rclpy.shutdown()              # cleanup
 
 if __name__ == '__main__':
