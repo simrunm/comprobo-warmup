@@ -23,26 +23,28 @@ class TeleopNode(Node):
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.settings)
 
     def run_loop(self):
+        # Use w and s to move forwards and backwards
+        # a and d to rotate left and right
         while self.key != '\x03':
+            my_twist_velocity = Twist()
             self.process_key()
             print("key: ", self.key)
-            my_twist_velocity = Twist()
-            if self.key == "\033[A":
+            if self.key == "w":
                 print('moving foward')
-                my_twist_velocity.linear.x = 1.0
-            elif self.key == "\033[B":
+                my_twist_velocity.linear.x = 2.0
+            elif self.key == "s":
                 print('moving backwards')
-                my_twist_velocity.linear.x = -1.0
-            elif self.key == "\033[D":
+                my_twist_velocity.linear.x = -2.0
+            elif self.key == "a":
                 print('moving left')
-                my_twist_velocity.linear.y = -1.0
-            elif self.key == "\033[C":
-                print('moving left')
-                my_twist_velocity.linear.y = 1.0
-            self.pub.publish(my_twist_velocity)
-            time.sleep(2)
-            my_twist_velocity.linear.x = 0.0
-            my_twist_velocity.linear.y = 0.0
+                my_twist_velocity.angular.z = 1.0
+            elif self.key == "d":
+                print('moving right')
+                my_twist_velocity.angular.z = -1.0
+            elif self.key == " ":
+                print('stopping')
+                my_twist_velocity.linear.x = 0.0
+                my_twist_velocity.angular.z = 0.0
             self.pub.publish(my_twist_velocity)
 
 def main(args=None):
