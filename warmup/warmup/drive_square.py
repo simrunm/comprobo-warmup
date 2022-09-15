@@ -23,23 +23,17 @@ class DriveSquare(Node):
 
     def process_odom(self, msg):
         self.count += 1 
-        roll, pitch, yaw = euler_from_quaternion(msg.pose.pose.orientation)
+        _, _, yaw = euler_from_quaternion(msg.pose.pose.orientation)
         if self.first:
             self.initial_position = msg.pose.pose.position
             self.initial_orientation = yaw
-            print("Initial orientation", yaw)
-            print("initial_position", msg.pose.pose.position)
             self.first = False
-        # if self.count % 10 == 0:
-        #     print("orientation: ", euler_from_quaternion(msg.pose.pose.orientation))
-        #     print("the diff", abs(yaw - self.initial_orientation))
-        # # print("position: ", msg.pose.pose.position)
         if self.start_straight and math.dist([self.initial_position.x, self.initial_position.y], [msg.pose.pose.position.x, msg.pose.pose.position.y]) > 1:
             self.start_straight = False
             self.start_turn = True
             self.first = True
         
-        if self.start_turn and abs(yaw - self.initial_orientation) > 1.4:
+        if self.start_turn and abs(yaw - self.initial_orientation) > math.pi/2:
             self.start_straight = True
             self.start_turn = False
             self.first = True      
@@ -47,11 +41,11 @@ class DriveSquare(Node):
     def run_loop(self):
         velocity = Twist()
         if self.start_straight:        
-            velocity.linear.x = 0.2
+            velocity.linear.x = 0.1
             velocity.angular.z = 0.0
         if self.start_turn:        
             velocity.linear.x = 0.0
-            velocity.angular.z = 0.2
+            velocity.angular.z = 0.1
         
         # velocity.linear.x = 0.0
         # velocity.angular.z = 0.2
