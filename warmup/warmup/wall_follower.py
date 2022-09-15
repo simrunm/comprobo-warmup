@@ -3,6 +3,9 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
+from visualization_msgs.msg import Marker, MarkerArray
+from geometry_msgs.msg import Point
+
 # from teleop import TeleopNode
 
 class WallFollowerNode(Node):
@@ -13,6 +16,7 @@ class WallFollowerNode(Node):
         self.sub = self.create_subscription(LaserScan, 'scan', self.process_laserscan, 10)
         self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.timer = self.create_timer(1, self.run_loop)
+        self.vis_pub = self.create_publisher(Marker, 'visualization_marker', 10)
 
     def process_laserscan(self, msg):
         # print("0: ", msg.ranges[0])
@@ -48,7 +52,29 @@ class WallFollowerNode(Node):
             my_twist_velocity.angular.z = 0.0
             self.pub.publish(my_twist_velocity)
         self.pub.publish(my_twist_velocity)
+        self.publish_marker()
 
+    def publish_marker(self):
+        marker = Marker()
+        marker.header.frame_id = "odom";
+        marker.header.stamp = self.get_clock().now().to_msg()
+        marker.id = 0
+        marker.type = marker.LINE_STRIP
+        marker.action = marker.ADD
+        marker.scale.x = 0.5
+        marker.color.a = 1.0
+        marker.color.b = 1.0
+        marker.pose.orientation.w=1.0
+        marker.pose.position.x = 0.0
+        marker.pose.position.y = 0.0
+        marker.pose.position.z = 0.0
+        marker.points=[]
+        marker.points.append(Point(x=-7.0, y=2.0, z=0.0))
+        marker.points.append(Point(x=-3.0, y=2.0, z=0.0))
+        marker.points.append(Point(x=1.0, y=2.5, z=0.0))
+        marker.points.append(Point(x=5.0, y=4.0, z=0.0))
+        marker.points.append(Point(x=8.5, y=4.8, z=0.0))
+        marker.points.append(Point(x=14.0, y=4.0, z=0.0))
 
 def main(args=None):
     rclpy.init(args=args)         # Initialize communication with ROS
