@@ -11,8 +11,6 @@ class DriveSquare(Node):
     first = True
     initial_position = 0
     initial_orientation = 0
-    count = 0
-    # state = 
 
     def __init__(self):
         super().__init__('receive_message_node')
@@ -20,23 +18,27 @@ class DriveSquare(Node):
         self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.timer = self.create_timer(0.1, self.run_loop)
 
-
     def process_odom(self, msg):
-        self.count += 1 
         _, _, yaw = euler_from_quaternion(msg.pose.pose.orientation)
         if self.first:
             self.initial_position = msg.pose.pose.position
             self.initial_orientation = yaw
             self.first = False
+            
         if self.start_straight and math.dist([self.initial_position.x, self.initial_position.y], [msg.pose.pose.position.x, msg.pose.pose.position.y]) > 1:
-            self.start_straight = False
-            self.start_turn = True
-            self.first = True
-        
-        if self.start_turn and abs(yaw - self.initial_orientation) > math.pi/2:
-            self.start_straight = True
-            self.start_turn = False
-            self.first = True      
+            self.set_to_turn()
+        if self.start_turn and abs(yaw - self.initial_orientation) > math.pi / 2:
+            self.set_to_straight()
+
+    def set_to_turn(self):
+        self.start_straight = False
+        self.start_turn = True
+        self.first = True    
+
+    def set_to_straight(self):
+        self.start_straight = True
+        self.start_turn = False
+        self.first = True
 
     def run_loop(self):
         velocity = Twist()
@@ -46,9 +48,6 @@ class DriveSquare(Node):
         if self.start_turn:        
             velocity.linear.x = 0.0
             velocity.angular.z = 0.1
-        
-        # velocity.linear.x = 0.0
-        # velocity.angular.z = 0.2
         self.pub.publish(velocity)
 
 
