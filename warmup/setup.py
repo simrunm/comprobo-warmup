@@ -23,7 +23,8 @@ setup(
             'test_viz = warmup.test_viz:main',
             'teleop = warmup.teleop:main',
             'wall_follower = warmup.wall_follower:main',
-            'drive_square = warmup.drive_square:main'
+            'drive_square = warmup.drive_square:main',
+            'person_follower = warmup.person_follower:main'
         ],
     },
 )
