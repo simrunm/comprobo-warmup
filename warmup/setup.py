@@ -24,6 +24,7 @@ setup(
             'teleop = warmup.teleop:main',
             'wall_follower = warmup.wall_follower:main',
             'drive_square = warmup.drive_square:main',
+            'obstacle_avoidance = warmup.obstacle_avoidance:main',
             'person_follower = warmup.person_follower:main'
         ],
     },
