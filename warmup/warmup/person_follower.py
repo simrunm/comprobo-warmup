@@ -15,69 +15,64 @@ class PersonFollowerNode(Node):
 
     def __init__(self):
         super().__init__('receive_message_node')
-        self.sub = self.create_subscription(Odometry, '/odom', self.process_odom, 10)
+        # self.sub = self.create_subscription(Odometry, '/odom', self.process_odom, 10)
         self.sub = self.create_subscription(LaserScan, 'scan', self.process_laserscan, 10)
         self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.timer = self.create_timer(0.1, self.run_loop)
         self.vis_pub = self.create_publisher(Marker, 'visualization_marker', 10)
-        self.yaw = 0
         self.angle = 0
-        self.turn_angle = 0
+        self.turn_speed = 0
+        self.straight_speed = 0
+        self.turn = True
+        self.straight = True
 
-    def process_odom(self, msg):
-        _, _, self.yaw = euler_from_quaternion(msg.pose.pose.orientation)
 
-        
-        pass
-    
     def process_laserscan(self, msg):
-        print("whole thing", msg)
-        # print("ranges", msg.ranges)
-        distance = max(msg.ranges)
+        # print("whole thing", msg)
+        distance = min(msg.ranges)
+        print(f'Distance: {distance}')
         self.angle = msg.ranges.index(distance)
-        if self.angle < 180:
-            self.turn_angle = 0.2 
+        if self.angle > 180:
+            self.angle = self.angle - 360
+        print(f'Angle to object: {self.angle}')
+        # turn proportionally to the distance away from it
+        self.turn_speed = self.angle / 100
+        self.straight_speed = distance / 5
+        print(f'Turning angle: {self.turn_speed}')
+
+        if np.allclose(self.angle, 0, atol=1):
+            self.turn_speed = 0
+            self.turn = False 
+            # self.straight = True
+            print("Stopping turning")
         else:
-            self.turn_angle = -0.2
+            self.turn = True
+
+        if np.allclose(distance, 0, atol=0.3):
+            self.straight = False
+            print("Stopping straight")
+        else:
+            self.straight = True
         
     def run_loop(self):
-        # needs work
         velocity = Twist()
-        velocity.angular.z = self.turn_angle 
+        if self.turn:
+            velocity.angular.z = float(self.turn_speed)
+        else:
+            velocity.angular.z = 0.0
+        if self.straight:
+            velocity.linear.x = float(self.straight_speed)
+        else:
+            velocity.linear.x = 0.0
+        self.pub.publish(velocity)
 
-            
         
 def main(args=None):
     rclpy.init(args=args)         # Initialize communication with ROS
     node = PersonFollowerNode()     # Create our Node
-    # teleopNode = TeleopNode()           # Create our Node
     rclpy.spin(node)              # Run the Node until ready to shutdown
     rclpy.shutdown()              # cleanup
 
 if __name__ == '__main__':
     main()
 
-
-def euler_from_quaternion(quaternion):
-    """
-    Converts quaternion (w in last place) to euler roll, pitch, yaw
-    quaternion = [x, y, z, w]
-    Bellow should be replaced when porting for ROS 2 Python tf_conversions is done.
-    """
-    x = quaternion.x
-    y = quaternion.y
-    z = quaternion.z
-    w = quaternion.w
-
-    sinr_cosp = 2 * (w * x + y * z)
-    cosr_cosp = 1 - 2 * (x * x + y * y)
-    roll = np.arctan2(sinr_cosp, cosr_cosp)
-
-    sinp = 2 * (w * y - z * x)
-    pitch = np.arcsin(sinp)
-
-    siny_cosp = 2 * (w * z + x * y)
-    cosy_cosp = 1 - 2 * (y * y + z * z)
-    yaw = np.arctan2(siny_cosp, cosy_cosp)
-
-    return roll, pitch, yaw
