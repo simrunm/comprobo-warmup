@@ -43,7 +43,6 @@ class PersonFollowerNode(Node):
         if np.allclose(self.angle, 0, atol=1):
             self.turn_speed = 0
             self.turn = False 
-            # self.straight = True
             print("Stopping turning")
         else:
             self.turn = True
