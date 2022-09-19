@@ -20,7 +20,6 @@ class PersonFollowerNode(Node):
         self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.vis_pub = self.create_publisher(Marker, 'visualization_marker', 10)
         self.timer = self.create_timer(0.1, self.run_loop)
-        self.vis_pub = self.create_publisher(Marker, 'visualization_marker', 10)
         self.ranges = []
         self.angle = 0
         self.turn_speed = 0
