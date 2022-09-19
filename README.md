@@ -24,6 +24,9 @@ Through working on this project, we've learned strategies for debugging robotics
 
 [[source]](warmup/warmup/drive_square.py)
 
+<img src="warmup/resource/drive_square.gif" width="280"/>
+
+
 ## Wall Following
 
 [[source]](warmup/warmup/wall_follower.py)
