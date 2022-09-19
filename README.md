@@ -39,3 +39,5 @@ The goal for this behavior is to have the Neato move forward while aligning its 
 ## Obstacle Avoidance
 
 [[source]](warmup/warmup/obstacle_avoidance.py)
+
+<img src="warmup/resource/obstacle_avoid.gif" width="280"/>
