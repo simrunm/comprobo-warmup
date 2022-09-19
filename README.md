@@ -20,20 +20,31 @@ Through working on this project, we've learned strategies for debugging robotics
 
 [[source]](warmup/warmup/teleop.py)
 
+The teleoperation ("teleop") node is used to control the motion of the robot through the ROS network. Our implementation uses key binding to assign specific robot actions to certain key inputs. The WASD keys are to command the robot to move forwards, backwards, rotate left and right, and the spacebar commands the robot to stop.
+
 ## Driving a Square
 
 [[source]](warmup/warmup/drive_square.py)
 
-<img src="warmup/resource/drive_square.gif" width="280"/>
-
+<p align="center">
+<img src="warmup/resource/drive_square.gif" width="300"/>
+</p>
 
 ## Wall Following
 
 [[source]](warmup/warmup/wall_follower.py)
 
-<img src="warmup/resource/wall_follower.gif" width="280"/>
+The goal for this behavior is to have the Neato move forward while aligning its direction of motion to be parallel to the nearest wall. 
 
-The goal for this behavior is to have the Neato move forward while aligning its direction of motion to be parallel to the nearest wall. Our implementation involves using data from the laser range finder to determine whether the robot should a) keep driving straight, b) steer slightly to the left or c) steer slightly to the right in order to keep parralel to the wall. 
+<p align="center">
+<img src="warmup/resource/wall_follower.gif" width="300"/>
+</p>
+
+Our implementation involves using data from the laser range finder to determine whether the robot should 1) keep driving straight, 2) steer slightly to the left or 3) steer slightly to the right in order to keep parallel to the wall. As Fig 1 shows, we looked at the laser range finder data values at 60 degrees (a) and 120 degrees (b) to determine how the robot was oriented relative to the wall. Fig 2 shows how these two values are very close when the robot is parallel to the wall, indicating that the robot should keep driving straight. In Fig 3, we can see how (a) is greater than (b) when the robot is oriented slightly to the right, indicating that it should steer slightly to the left in order to keep parallel with the wall. Fig 4 follows the same logic, indicating that the robot should steer slightly to the right in order to keep on track.
+
+<p align="center">
+<img src="warmup/resource/wall_neato.jpg" height="220"/>
+</p>
 
 ## Person Following
 
@@ -43,4 +54,16 @@ The goal for this behavior is to have the Neato move forward while aligning its 
 
 [[source]](warmup/warmup/obstacle_avoidance.py)
 
-<img src="warmup/resource/obstacle_avoid.gif" width="280"/>
+The goal for this behavior is to have the Neato move towards a goal while reactively avoiding obstacles that block its path.
+
+<p align="center">
+<img src="warmup/resource/obstacle_avoid.gif" width="300"/>
+</p>
+
+Our implementation uses the concept of potential fields, where the vector pointing towards the goal acts as a force constantly pulling the robot forward while nearby obstacles (detected by the laser range finder) exert repellant forces on the robot. The obstacle vectors are also weighed based on the laser range values, which effectively increases the magnitude of the repellant force as the robot gets closer to the obstacle.
+
+<p align="center">
+<img src="warmup/resource/vectors.jpg" width="350"/>
+</p>
+
+By summing the obstacle vectors and the goal vector, we obtain a direction of motion for the robot to steer towards the goal, which also avoiding obstacles.
