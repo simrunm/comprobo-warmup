@@ -19,18 +19,18 @@ class SimpleVisualizationPublisher(Node):
         marker.ns = "my_namespace";
         marker.id = 0
 
-        marker.type = Marker.SPHERE;
+        marker.type = Marker.CYLINDER;
         marker.action = Marker.ADD;
-        marker.pose.position.x = 1.0
-        marker.pose.position.y = 2.0
+        marker.pose.position.x = -2.0
+        marker.pose.position.y = -3.0
         marker.pose.position.z = 0.0
         marker.pose.orientation.x = 0.0;
         marker.pose.orientation.y = 0.0;
         marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
-        marker.scale.x = 1.0
-        marker.scale.y = 0.1
-        marker.scale.z = 0.1
+        marker.pose.orientation.w = 0.0;
+        marker.scale.x = 0.8
+        marker.scale.y = 0.8
+        marker.scale.z = 0.8
         marker.color.a = 1.0; # Don't forget to set the alpha!
         marker.color.r = 0.0
         marker.color.g = 1.0
