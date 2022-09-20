@@ -60,6 +60,7 @@ class WallBehaviourNode(Node):
         self.front_dist = 0
         self.back_dist = 0
         self.first = True
+        self.start_time = 0
 
     def process_laserscan(self, msg):
         self.front_dist = msg.ranges[60]
@@ -74,25 +75,22 @@ class WallBehaviourNode(Node):
         angle = self.ranges.index(distance)
         if angle > 180:
             angle = angle - 360
-        # print(f'Angle to object: {self.angle}')
 
         # turn proportionally to the distance away from it
         self.turn_speed = angle / 100
         self.straight_speed = distance / 6
-        # print(f'Turning angle: {self.turn_speed}')
 
-        if np.allclose(angle, 0, atol=1) and np.allclose(distance, 0, atol=0.5):
+        if np.allclose(angle, 0, atol=1) and np.allclose(distance, 0, atol=0.75):
             self.turn_speed = 0.0
             self.straight_speed = 0.0
             self.state_machine.found_object = True
   
-# change world design so walls are in front of robot
+
     def align(self):
-        self.turn_speed = 0.2
-        print("angle", self.ranges.index(min(self.ranges)))
+        self.turn_speed = -0.2
         if np.allclose(self.ranges.index(min(self.ranges)), 90, atol=5): # first part is just the angle
             self.turn_speed = 0.0
-            self.state_machine.align = True
+            self.state_machine.aligned = True
 
 
 
@@ -100,14 +98,13 @@ class WallBehaviourNode(Node):
         """Check that object is more than 5 meters"""
         self.straight_speed = self.DEFAULT_SPEED
         if self.first:
-            start_time = time.Time()
+            self.start_time = time.time()
             self.first = False
         # check that three seconds have passed and there is still a wall
-        if (time.Time() - start_time) > 3:
-            self.checked = True
+        if (time.time() - self.start_time) > 3 and self.start_time != 0:
+            self.state_machine.checked = True
             if self.ranges[90] < 5:
                 self.state_machine.is_wall = True      
-
 
 
     def wall_follow(self):
@@ -118,14 +115,11 @@ class WallBehaviourNode(Node):
         if dist < -0.1:
             print("adjusting to right")
             self.turn_speed = -0.1
-        # if finished following wall
-            # self.state_machine.wall_follow = True
 
 
     def run_loop(self):
         velocity = Twist()
         self.state_machine.find_state()
-        print(f'Current state: {self.state_machine.current_state}')
         if self.state_machine.current_state == 'find_wall':
             self.find_wall()
 
@@ -135,7 +129,7 @@ class WallBehaviourNode(Node):
         elif self.state_machine.current_state == 'check_wall':
             self.check_wall()
 
-        elif self.state_machine.current_state == 'wall_follow':
+        elif self.state_machine.current_state == 'follow_wall':
             self.wall_follow()
 
         else:
