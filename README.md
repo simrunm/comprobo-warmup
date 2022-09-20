@@ -13,6 +13,7 @@ The objective of this warmup project is to gain familiarity with ROS and brush u
 * [Wall Following](#wall-following)
 * [Person Following](#person-following)
 * [Obstacle Avoidance](#obstacle-avoidance)
+* [Finite State Controller](#finite-state-controller)
 
 Through working on this project, we've learned strategies for debugging robotics programs and gained familiarity with finite-state robot control. We ran our programs on the [Neato](https://neatorobotics.com/) robot vacuum, both physically and in simulation through [Gazebo](https://gazebosim.org/home).
 
@@ -67,3 +68,11 @@ Our implementation uses the concept of potential fields, where the vector pointi
 </p>
 
 By summing the obstacle vectors and the goal vector, we obtain a direction of motion for the robot to steer towards the goal, which also avoiding obstacles.
+
+## Finite State Controller
+
+[[source]](warmup/warmup/finite_state_controller.py)
+
+<p align="center">
+<img src="warmup/resource/finite_state_diagram.jpg" width="350"/>
+</p>
