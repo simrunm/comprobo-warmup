@@ -31,6 +31,7 @@ The teleoperation ("teleop") node is used to control the motion of the robot thr
 <p align="center">
 <img src="warmup/resource/drive_square.gif" width="300"/>
 </p>
+<center> Video of square driving in RViz at x5 speed </center>
 
 ## Wall Following
 
@@ -53,14 +54,10 @@ Our implementation involves using data from the laser range finder to determine 
 
 [[source]](warmup/warmup/person_follower.py)
 
-<<<<<<< HEAD
 <p align="center">
 <img src="warmup/resource/person_follower.gif" width="300"/>
 </p>
 <center> Video of person following in RViz at x2 speed </center>
-=======
-This implementation uses 
->>>>>>> 3555c33a3bb9ade86e2cb9abe894613e1b340946
 
 ## Obstacle Avoidance
 
