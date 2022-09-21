@@ -31,6 +31,8 @@ The teleoperation ("teleop") node is used to control the motion of the robot thr
 <img src="warmup/resource/drive_square.gif" width="300"/>
 </p>
 
+This implementation involved using the NEATO's odometry in order to find where the robot relative to its starting position. In order to complete a square, the NEATO would repeat the pattern on driving straigh and then turning 90 degrees. In order to know when to start turning, the odomtetry position data was used to determine if the NEATO had driven a distance of 1 meter. In order to know when to stop turning, the orientation data was used to determine if the NEATO had turned 90 degrees.
+
 ## Wall Following
 
 [[source]](warmup/warmup/wall_follower.py)
@@ -51,7 +53,7 @@ Our implementation involves using data from the laser range finder to determine 
 
 [[source]](warmup/warmup/person_follower.py)
 
-This implementation uses 
+For this behaviour, the NEATO uses data from the laser scan in order to find the nearest object to it which is assumed to be the person it is following. Once it finds the person, it uses proportional control to oreint and drive towards the person based on the angle and distance from the person. 
 
 ## Obstacle Avoidance
 
@@ -78,3 +80,10 @@ By summing the obstacle vectors and the goal vector, we obtain a direction of mo
 <p align="center">
 <img src="warmup/resource/finite_state_diagram.jpg" width="350"/>
 </p>
+
+<p align="center">
+<img src="warmup/resource/finite-state-machine.gif" width="300"/>
+</p>
+
+
+This finite state controller expanded on our already existing wall follower code. We added the behaviours of finding the wall and aligning to it before following it. In order to find the wall, we reuse the implementation used in person follower where the robot approaches the closest object to it. In the align state, the robot turns until the closest object to it is at 90 degrees on the laser scan to confirm that it is along the wall. In the follow wall state, we reuse the implementation that was used in wall follower. We used a seperate class to manage the state transitions. 
