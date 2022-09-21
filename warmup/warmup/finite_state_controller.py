@@ -117,6 +117,7 @@ class WallBehaviourNode(Node):
             self.turn_speed = -0.1
 
 
+
     def run_loop(self):
         velocity = Twist()
         self.state_machine.find_state()

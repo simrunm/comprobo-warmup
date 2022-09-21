@@ -51,6 +51,8 @@ Our implementation involves using data from the laser range finder to determine 
 
 [[source]](warmup/warmup/person_follower.py)
 
+This implementation uses 
+
 ## Obstacle Avoidance
 
 [[source]](warmup/warmup/obstacle_avoidance.py)
