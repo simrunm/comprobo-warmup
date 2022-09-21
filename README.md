@@ -17,6 +17,7 @@ The objective of this warmup project is to gain familiarity with ROS and brush u
 
 Through working on this project, we've learned strategies for debugging robotics programs and gained familiarity with finite-state robot control. We ran our programs on the [Neato](https://neatorobotics.com/) robot vacuum, both physically and in simulation through [Gazebo](https://gazebosim.org/home).
 
+
 ## Teleoperation
 
 [[source]](warmup/warmup/teleop.py)
@@ -30,8 +31,7 @@ The teleoperation ("teleop") node is used to control the motion of the robot thr
 <p align="center">
 <img src="warmup/resource/drive_square.gif" width="300"/>
 </p>
-
-This implementation involved using the NEATO's odometry in order to find where the robot relative to its starting position. In order to complete a square, the NEATO would repeat the pattern on driving straigh and then turning 90 degrees. In order to know when to start turning, the odomtetry position data was used to determine if the NEATO had driven a distance of 1 meter. In order to know when to stop turning, the orientation data was used to determine if the NEATO had turned 90 degrees.
+<center> Video of square driving in RViz at x5 speed </center>
 
 ## Wall Following
 
@@ -42,6 +42,7 @@ The goal for this behavior is to have the Neato move forward while aligning its 
 <p align="center">
 <img src="warmup/resource/wall_follower.gif" width="300"/>
 </p>
+<center> Video of wall following in <a href="https://github.com/ros2/rviz">Rviz</a> at x5 speed </center>
 
 Our implementation involves using data from the laser range finder to determine whether the robot should 1) keep driving straight, 2) steer slightly to the left or 3) steer slightly to the right in order to keep parallel to the wall. As Fig 1 shows, we looked at the laser range finder data values at 60 degrees (a) and 120 degrees (b) to determine how the robot was oriented relative to the wall. Fig 2 shows how these two values are very close when the robot is parallel to the wall, indicating that the robot should keep driving straight. In Fig 3, we can see how (a) is greater than (b) when the robot is oriented slightly to the right, indicating that it should steer slightly to the left in order to keep parallel with the wall. Fig 4 follows the same logic, indicating that the robot should steer slightly to the right in order to keep on track.
 
@@ -53,8 +54,12 @@ Our implementation involves using data from the laser range finder to determine 
 
 [[source]](warmup/warmup/person_follower.py)
 
-For this behaviour, the NEATO uses data from the laser scan in order to find the nearest object to it which is assumed to be the person it is following. Once it finds the person, it uses proportional control to oreint and drive towards the person based on the angle and distance from the person. 
+<p align="center">
+<img src="warmup/resource/person_follower.gif" width="300"/>
+</p>
+<center> Video of person following in RViz at x2 speed </center>
 
+For this behaviour, the NEATO uses data from the laser scan in order to find the nearest object to it which is assumed to be the person it is following. Once it finds the person, it uses proportional control to oreint and drive towards the person based on the angle and distance from the person. 
 ## Obstacle Avoidance
 
 [[source]](warmup/warmup/obstacle_avoidance.py)
@@ -64,6 +69,7 @@ The goal for this behavior is to have the Neato move towards a goal while reacti
 <p align="center">
 <img src="warmup/resource/obstacle_avoid.gif" width="300"/>
 </p>
+<center> Video of obstacle avoidance in RViz at x5 speed </center>
 
 Our implementation uses the concept of potential fields, where the vector pointing towards the goal acts as a force constantly pulling the robot forward while nearby obstacles (detected by the laser range finder) exert repellant forces on the robot. The obstacle vectors are also weighed based on the laser range values, which effectively increases the magnitude of the repellant force as the robot gets closer to the obstacle.
 
