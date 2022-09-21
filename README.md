@@ -90,6 +90,7 @@ By summing the obstacle vectors and the goal vector, we obtain a direction of mo
 <p align="center">
 <img src="warmup/resource/finite-state-machine.gif" width="300"/>
 </p>
+<center> Video of FSM in Gazebo at x5 speed </center>
 
 
 This finite state controller expanded on our already existing wall follower code. We added the behaviours of finding the wall and aligning to it before following it. In order to find the wall, we reuse the implementation used in person follower where the robot approaches the closest object to it. In the align state, the robot turns until the closest object to it is at 90 degrees on the laser scan to confirm that it is along the wall. In the follow wall state, we reuse the implementation that was used in wall follower. We used a seperate class to manage the state transitions. 
