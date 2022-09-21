@@ -32,6 +32,7 @@ The teleoperation ("teleop") node is used to control the motion of the robot thr
 <img src="warmup/resource/drive_square.gif" width="300"/>
 </p>
 <figcaption align = "center">Video of NEATO driving in a square at 5x speed</figcaption>
+
 &nbsp;
 
 This implementation involved using the NEATO's odometry in order to find where the robot relative to its starting position. In order to complete a square, the NEATO would repeat the pattern on driving straigh and then turning 90 degrees. In order to know when to start turning, the odomtetry position data was used to determine if the NEATO had driven a distance of 1 meter. In order to know when to stop turning, the orientation data was used to determine if the NEATO had turned 90 degrees.
