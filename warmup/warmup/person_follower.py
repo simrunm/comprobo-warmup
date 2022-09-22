@@ -3,12 +3,11 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
-from visualization_msgs.msg import Marker, MarkerArray
+from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
 from nav_msgs.msg import Odometry
 import numpy as np
 import math
-# from teleop import TeleopNode
 
 class PersonFollowerNode(Node):
     dist = 0
@@ -30,18 +29,15 @@ class PersonFollowerNode(Node):
 
     def process_laserscan(self, msg):
         self.ranges = msg.ranges
-        # print(f'Ranges list: {self.ranges}')
         distance = min(msg.ranges)
-        # print(f'Distance: {distance}')
         self.angle = msg.ranges.index(distance)
         if self.angle > 180:
             self.angle = self.angle - 360
-        # print(f'Angle to object: {self.angle}')
+
 
         # turn proportionally to the distance away from it
         self.turn_speed = self.angle / 100
         self.straight_speed = distance / 6
-        # print(f'Turning angle: {self.turn_speed}')
 
         if np.allclose(self.angle, 0, atol=1):
             self.turn_speed = 0
