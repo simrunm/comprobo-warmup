@@ -6,6 +6,7 @@ import numpy as np
 import math 
 
 class DriveSquare(Node):
+    """ROS node to drive in a square"""
     start_turn = False
     start_straight = True
     first = True
@@ -19,14 +20,22 @@ class DriveSquare(Node):
         self.timer = self.create_timer(0.1, self.run_loop)
 
     def process_odom(self, msg):
+        """Process odometry and set the NEATO to drive straight or turn"""
+
+        # Getting yaw from quarternion to know how much the NEATO is turning
         _, _, yaw = euler_from_quaternion(msg.pose.pose.orientation)
+        
+        # Record the first value 
         if self.first:
             self.initial_position = msg.pose.pose.position
             self.initial_orientation = yaw
             self.first = False
             
+        # Start turning when the NEATO has driven straight for 1 meter
         if self.start_straight and math.dist([self.initial_position.x, self.initial_position.y], [msg.pose.pose.position.x, msg.pose.pose.position.y]) > 1:
             self.set_to_turn()
+
+        # Start driving straight when the NEATO has turned 90 degrees
         if self.start_turn and abs(yaw - self.initial_orientation) > math.pi / 2:
             self.set_to_straight()
 
@@ -41,7 +50,8 @@ class DriveSquare(Node):
         self.first = True
 
     def run_loop(self):
-        velocity = Twist()
+        """Main loop to set NEATO speeds"""
+        velocity = Twist()        
         if self.start_straight:        
             velocity.linear.x = 0.1
             velocity.angular.z = 0.0

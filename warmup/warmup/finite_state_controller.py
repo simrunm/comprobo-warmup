@@ -1,19 +1,17 @@
 
 import rclpy
 from rclpy.node import Node
-from time import sleep
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
-# from geometry_msgs.msg import Point
 import math
 import time
 import numpy as np
 
 class StateMachine:
-
+    """Class for controlling state transitions"""
     def __init__(self):
         self.current_state = 'find_wall'
         self.found_object = False
@@ -24,6 +22,7 @@ class StateMachine:
 
 
     def find_state(self):
+        """Find the current state"""
         if self.current_state == 'find_wall' and self.found_object:
             self.current_state = 'align'
         
@@ -42,8 +41,8 @@ class StateMachine:
 
 
 class WallBehaviourNode(Node):
+    """ROS node for finding and following wall using finite state machine"""
     DEFAULT_SPEED = 0.2
-
 
     def __init__(self):
         self.state_machine = StateMachine()
@@ -63,12 +62,19 @@ class WallBehaviourNode(Node):
         self.start_time = 0
 
     def process_laserscan(self, msg):
+        # Distances needed for wall following at 60 and 120 degrees
         self.front_dist = msg.ranges[60]
         self.back_dist = msg.ranges[120]
         self.ranges = msg.ranges     
 
     
     def find_wall(self):
+        """
+        Finding the angle and distance of the nearest object
+        and setting the velocity based on that
+        """
+
+        # Find nearest object and record distance and angle
         if min(self.ranges) == math.inf:
             print("No object visible")
         distance = min(self.ranges)
@@ -80,6 +86,7 @@ class WallBehaviourNode(Node):
         self.turn_speed = angle / 100
         self.straight_speed = distance / 6
 
+        # Set the speed back to 0 if NEATO successfully approaches object
         if np.allclose(angle, 0, atol=1) and np.allclose(distance, 0, atol=0.75):
             self.turn_speed = 0.0
             self.straight_speed = 0.0
@@ -87,6 +94,7 @@ class WallBehaviourNode(Node):
   
 
     def align(self):
+        """Align the NEATO so it is on the left side of the wall"""
         self.turn_speed = -0.2
         if np.allclose(self.ranges.index(min(self.ranges)), 90, atol=5): # first part is just the angle
             self.turn_speed = 0.0
@@ -95,11 +103,14 @@ class WallBehaviourNode(Node):
 
 
     def check_wall(self):
-        """Check that object is more than 5 meters"""
+        """Check that the wall is more than 5 meters"""
+        
+        # Record time when robot first starts driving
         self.straight_speed = self.DEFAULT_SPEED
         if self.first:
             self.start_time = time.time()
             self.first = False
+
         # check that three seconds have passed and there is still a wall
         if (time.time() - self.start_time) > 3 and self.start_time != 0:
             self.state_machine.checked = True
@@ -108,7 +119,11 @@ class WallBehaviourNode(Node):
 
 
     def wall_follow(self):
+        """Follow wall"""
+
         dist = self.front_dist - self.back_dist
+
+        # Adjust velocity based on how close the NEATO is to the wall
         if dist > 0.1:
             print("adjusting to left")
             self.turn_speed = 0.1
@@ -119,7 +134,11 @@ class WallBehaviourNode(Node):
 
 
     def run_loop(self):
+        """Main loop for running all behaviours"""
+
         velocity = Twist()
+
+        # Execute behaviour based on  state
         self.state_machine.find_state()
         if self.state_machine.current_state == 'find_wall':
             self.find_wall()
@@ -136,6 +155,7 @@ class WallBehaviourNode(Node):
         else:
             print("Unknown state")
 
+        # Publish velocity to NEATO
         velocity.angular.z = float(self.turn_speed)
         velocity.linear.x = float(self.straight_speed)
         self.pub.publish(velocity)

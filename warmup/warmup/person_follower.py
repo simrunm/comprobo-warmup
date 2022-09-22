@@ -1,20 +1,18 @@
-from time import sleep
+
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
-from nav_msgs.msg import Odometry
 import numpy as np
-import math
+
 
 class PersonFollowerNode(Node):
+    """ROS node for following a person"""
     dist = 0
 
     def __init__(self):
         super().__init__('receive_message_node')
-        # self.sub = self.create_subscription(Odometry, '/odom', self.process_odom, 10)
         self.sub = self.create_subscription(LaserScan, 'scan', self.process_laserscan, 10)
         self.pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.vis_pub = self.create_publisher(Marker, 'visualization_marker', 10)
@@ -28,6 +26,7 @@ class PersonFollowerNode(Node):
         self.first = True
 
     def process_laserscan(self, msg):
+        """Finding the distance and angle of the nearest object"""
         self.ranges = msg.ranges
         distance = min(msg.ranges)
         self.angle = msg.ranges.index(distance)
@@ -39,18 +38,21 @@ class PersonFollowerNode(Node):
         self.turn_speed = self.angle / 100
         self.straight_speed = distance / 6
 
+        # Turn until the NEATO is facing the person
         if np.allclose(self.angle, 0, atol=1):
             self.turn_speed = 0
             self.turn = False 
         else:
             self.turn = True
 
+        # Drive until the NEATO is close to the person
         if np.allclose(distance, 0, atol=0.3):
             self.straight = False
         else:
             self.straight = True
 
     def publish_marker(self):
+        """Use a cyclinder marker to represent the person"""
         marker = Marker()
         marker.header.frame_id = "odom";
         marker.header.stamp = self.get_clock().now().to_msg()
@@ -75,13 +77,19 @@ class PersonFollowerNode(Node):
         marker.color.b = 0.0
 
         self.vis_pub.publish( marker );
+    
     def run_loop(self):
+        """ Main loop that node runs"""
         self.publish_marker()
         velocity = Twist()
+
+        # Turning
         if self.turn:
             velocity.angular.z = float(self.turn_speed)
         else:
             velocity.angular.z = 0.0
+
+        # Driving straight
         if self.straight:
             velocity.linear.x = float(self.straight_speed)
         else:
@@ -89,11 +97,6 @@ class PersonFollowerNode(Node):
         self.pub.publish(velocity)
 
 
-def polar_to_cartesian(r, theta):
-    x = r * math.cos(theta * math.pi / 180)
-    y = r * math.sin(theta * math.pi / 180)
-    return x,y
-        
 def main(args=None):
     rclpy.init(args=args)         # Initialize communication with ROS
     node = PersonFollowerNode()     # Create our Node
